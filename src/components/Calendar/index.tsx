@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StyleSheet, View, Text, Pressable } from 'react-native'
+import { StyleSheet, View, Text, Pressable, Alert } from 'react-native'
 
 import { Theme } from '../../styles/theme'
 
@@ -19,6 +19,7 @@ import Animated, {
 
 import { ArrowIcon } from './components'
 import CalendarIcon from '../../../assets/calendar.svg'
+import { fetchHoliday } from '../../utils/fetch-holiday'
 
 const AnimArrowIcon = Animated.createAnimatedComponent(ArrowIcon)
 
@@ -73,6 +74,8 @@ type Props = {
 
 const Calendar: React.FC<Props> = ({ onSelect, period, ...props }) => {
   const [date, setDate] = useState('')
+  const [dateError, setDateError] = useState('')
+
   const open = useSharedValue(false)
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -91,16 +94,28 @@ const Calendar: React.FC<Props> = ({ onSelect, period, ...props }) => {
     ],
   }))
 
-  const handleDate = (date: DateData) => {
-    const formattedDate = `${date.day.toString().padStart(2, '0')}-${date.month
-      .toString()
-      .padStart(2, '0')}-${date.year}`
-    const auxDate = `${date.year}-${date.month
-      .toString()
-      .padStart(2, '0')}-${date.day.toString().padStart(2, '0')}`
-    setDate(formattedDate)
-    onSelect(auxDate)
-    handleOpen()
+  const handleDate = async (date: DateData) => {
+    try {
+      const holidays: string[] = await fetchHoliday(date.year)
+
+      if (holidays.includes(date.dateString))
+        return setDateError('Você selecionou um feriado!')
+
+      const formattedDate = `${date.day
+        .toString()
+        .padStart(2, '0')}-${date.month.toString().padStart(2, '0')}-${
+        date.year
+      }`
+      const auxDate = `${date.year}-${date.month
+        .toString()
+        .padStart(2, '0')}-${date.day.toString().padStart(2, '0')}`
+      setDate(formattedDate)
+      onSelect(auxDate)
+      handleOpen()
+    } catch (error) {
+      if (error === 'InternalError') return
+      Alert.alert('Erro!', 'Algo deu errado.')
+    }
   }
 
   const handleOpen = () => {
@@ -117,7 +132,10 @@ const Calendar: React.FC<Props> = ({ onSelect, period, ...props }) => {
         containerStyle,
       ]}
     >
-      <Pressable onPress={handleOpen} style={{ height: 50, marginBottom: 10 }}>
+      <Pressable
+        onPress={handleOpen}
+        style={{ height: dateError ? 75 : 50, marginBottom: 10 }}
+      >
         <View style={styles.container}>
           <View
             style={{
@@ -131,6 +149,7 @@ const Calendar: React.FC<Props> = ({ onSelect, period, ...props }) => {
           <AnimArrowIcon style={iconStyle} />
         </View>
       </Pressable>
+      {dateError && <Text style={styles.error}>{dateError}</Text>}
       <RNCalendar
         theme={{
           arrowColor: Theme.colors.primary.main,
@@ -166,6 +185,13 @@ const styles = StyleSheet.create({
   },
   calendar: {
     borderRadius: 4,
+  },
+  error: {
+    height: 20,
+    marginVertical: 10,
+    fontFamily: Theme.fonts.poppinsRegular,
+    color: 'red',
+    alignSelf: 'center',
   },
 })
 
