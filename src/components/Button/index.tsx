@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     fontSize: 16,
     lineHeight: 24,
-    color: Theme.colors.primary.darker,
+    color: Theme.colors.white,
   },
 })
 

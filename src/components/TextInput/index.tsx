@@ -22,6 +22,7 @@ const TextInput: React.FC<Props> = ({ label, leftIcon, ...props }) => {
         <RNTextInput
           underlineColorAndroid='transparent'
           style={styles.input}
+          selectionColor={Theme.colors.primary.main}
           {...props}
         />
       </View>

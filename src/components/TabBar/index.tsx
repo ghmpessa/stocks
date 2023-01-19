@@ -76,7 +76,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({
           return (
             <TouchableOpacity
               key={route.key}
-              activeOpacity={0.8}
+              activeOpacity={0.5}
               accessibilityRole='button'
               accessibilityState={isFocused ? { selected: true } : {}}
               accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -96,7 +96,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({
         return (
           <TouchableOpacity
             key={route.key}
-            activeOpacity={0.8}
+            activeOpacity={0.5}
             accessibilityRole='button'
             accessibilityState={isFocused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -109,16 +109,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({
             <Text numberOfLines={1} style={styles.label}>
               {label}
             </Text>
-            {isFocused && (
-              <View
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: 6,
-                  backgroundColor: Theme.colors.primary.main,
-                }}
-              />
-            )}
+            {isFocused && <View style={styles.pointer} />}
           </TouchableOpacity>
         )
       })}
@@ -161,10 +152,11 @@ const styles = StyleSheet.create({
     fontFamily: Theme.fonts.poppinsMedium,
     fontSize: 12,
   },
-  sliding: {
-    ...StyleSheet.absoluteFillObject,
-    borderTopWidth: 2,
-    borderTopColor: Theme.colors.white,
+  pointer: {
+    width: 6,
+    height: 6,
+    borderRadius: 6,
+    backgroundColor: Theme.colors.primary.main,
   },
 })
 
