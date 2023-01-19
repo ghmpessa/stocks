@@ -1,11 +1,5 @@
 import React, { useState } from 'react'
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableWithoutFeedback,
-  Pressable,
-} from 'react-native'
+import { StyleSheet, View, Text, Pressable } from 'react-native'
 
 import { Theme } from '../../styles/theme'
 
@@ -13,16 +7,18 @@ import {
   Calendar as RNCalendar,
   LocaleConfig,
   DateData,
+  CalendarListProps,
 } from 'react-native-calendars'
 
-import CalendarIcon from '../../../assets/calendar.svg'
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
+
 import { ArrowIcon } from './components'
+import CalendarIcon from '../../../assets/calendar.svg'
 
 const AnimArrowIcon = Animated.createAnimatedComponent(ArrowIcon)
 
@@ -72,9 +68,10 @@ LocaleConfig.defaultLocale = 'br'
 
 type Props = {
   onSelect: (date: string) => void
-}
+  period?: string
+} & CalendarListProps
 
-const Calendar: React.FC<Props> = ({ onSelect }) => {
+const Calendar: React.FC<Props> = ({ onSelect, period, ...props }) => {
   const [date, setDate] = useState('')
   const open = useSharedValue(false)
 
@@ -95,11 +92,14 @@ const Calendar: React.FC<Props> = ({ onSelect }) => {
   }))
 
   const handleDate = (date: DateData) => {
-    const formattedDate = `${date.day.toString().padStart(2, '0')}/${date.month
+    const formattedDate = `${date.day.toString().padStart(2, '0')}-${date.month
       .toString()
-      .padStart(2, '0')}/${date.year}`
+      .padStart(2, '0')}-${date.year}`
+    const auxDate = `${date.year}-${date.month
+      .toString()
+      .padStart(2, '0')}-${date.day.toString().padStart(2, '0')}`
     setDate(formattedDate)
-    onSelect(formattedDate)
+    onSelect(auxDate)
     handleOpen()
   }
 
@@ -126,18 +126,22 @@ const Calendar: React.FC<Props> = ({ onSelect }) => {
             }}
           >
             <CalendarIcon width={20} height={20} />
-            <Text style={styles.text}>{date}</Text>
+            <Text style={styles.text}>{date || period}</Text>
           </View>
           <AnimArrowIcon style={iconStyle} />
         </View>
       </Pressable>
       <RNCalendar
-        theme={{ arrowColor: '#4e41c7', backgroundColor: 'black' }}
+        theme={{
+          arrowColor: Theme.colors.primary.main,
+          backgroundColor: 'black',
+        }}
         style={styles.calendar}
         markedDates={{
-          [date]: { selected: true, selectedColor: '#4e41c7' },
+          [date]: { selected: true, selectedColor: Theme.colors.primary.main },
         }}
         onDayPress={handleDate}
+        {...props}
       />
     </Animated.View>
   )
