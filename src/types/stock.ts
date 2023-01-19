@@ -4,3 +4,8 @@ export type StockType = {
   price: string
   date: string
 }
+
+export type SectionType = {
+  date: string
+  data: StockType[]
+}
