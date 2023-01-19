@@ -1,13 +1,14 @@
 import React from 'react'
-import RootStack from './routes/stack.routes'
 import { NavigationContainer } from '@react-navigation/native'
-import Tabs from './routes/tab.routes'
 import StockStack from './routes/stack.routes'
+import { AppProvider } from './contexts/AppContext'
 
 const App = () => {
   return (
     <NavigationContainer>
-      <StockStack />
+      <AppProvider>
+        <StockStack />
+      </AppProvider>
     </NavigationContainer>
   )
 }
