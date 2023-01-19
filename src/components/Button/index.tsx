@@ -13,9 +13,10 @@ const APressable = Animated.createAnimatedComponent(Pressable)
 type Props = {
   title: string
   onPress?: () => void
+  disabled?: boolean
 }
 
-const Button: React.FC<Props> = ({ title, onPress }) => {
+const Button: React.FC<Props> = ({ title, onPress, disabled }) => {
   const progress = useSharedValue(1)
 
   const style = useAnimatedStyle(() => ({
@@ -24,10 +25,11 @@ const Button: React.FC<Props> = ({ title, onPress }) => {
 
   return (
     <APressable
-      style={[styles.button, style]}
+      style={[styles.button, style, disabled && { opacity: 0.6 }]}
       onPress={onPress}
       onPressIn={() => (progress.value = withTiming(0.9))}
       onPressOut={() => (progress.value = withTiming(1))}
+      disabled={disabled}
     >
       <LinearGradient
         colors={[Theme.colors.primary.light, Theme.colors.primary.main]}
